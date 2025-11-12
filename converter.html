@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-M">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Konverter Suhu (C, F, R)</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            display: grid;
+            place-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            padding: 20px;
+        }
+
+        .converter-card {
+            background: #ffffff;
+            padding: 2.5rem;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .converter-card h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 2rem;
+            font-weight: 600;
+        }
+
+        .input-group {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+
+        .input-group .icon {
+            position: absolute;
+            top: 50%;
+            left: 15px;
+            transform: translateY(-50%);
+            color: #764ba2;
+            font-size: 1.2rem;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 15px 15px 15px 50px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            color: #333;
+            transition: all 0.3s ease;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: #764ba2;
+            box-shadow: 0 0 10px rgba(118, 75, 162, 0.3);
+        }
+
+        .input-field::-webkit-outer-spin-button,
+        .input-field::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        .input-field {
+            -moz-appearance: textfield;
+        }
+
+        .reset-button {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            background-color: #764ba2;
+            color: white;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .reset-button:hover {
+            background-color: #5f3a82;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="converter-card animate__animated animate__fadeInDown">
+        <h2>Konverter Suhu 🌡️</h2>
+        
+        <div class="input-group">
+            <i class="fa-solid fa-c icon"></i>
+            <input type="number" id="celcius" class="input-field" placeholder="Celcius (C)">
+        </div>
+        
+        <div class="input-group">
+            <i class="fa-solid fa-f icon"></i>
+            <input type="number" id="fahrenheit" class="input-field" placeholder="Fahrenheit (F)">
+        </div>
+        
+        <div class="input-group">
+            <i class="fa-solid fa-r icon"></i>
+            <input type="number" id="reamur" class="input-field" placeholder="Reamur (R)">
+        </div>
+
+        <button id="reset" class="reset-button">Reset</button>
+    </div>
+
+    <script>
+        const celciusInput = document.getElementById('celcius');
+        const fahrenheitInput = document.getElementById('fahrenheit');
+        const reamurInput = document.getElementById('reamur');
+        const resetButton = document.getElementById('reset');
+
+        function roundToTwo(num) {
+            return Math.round((num + Number.EPSILON) * 100) / 100;
+        }
+
+        celciusInput.addEventListener('input', function() {
+            const c = parseFloat(this.value);
+
+            if (isNaN(c)) {
+                fahrenheitInput.value = '';
+                reamurInput.value = '';
+                return;
+            }
+
+            const f = (c * 9/5) + 32;
+            const r = c * 4/5;
+
+            fahrenheitInput.value = roundToTwo(f);
+            reamurInput.value = roundToTwo(r);
+        });
+
+        fahrenheitInput.addEventListener('input', function() {
+            const f = parseFloat(this.value);
+
+            if (isNaN(f)) {
+                celciusInput.value = '';
+                reamurInput.value = '';
+                return;
+            }
+
+            const c = (f - 32) * 5/9;
+            const r = (f - 32) * 4/9;
+
+            celciusInput.value = roundToTwo(c);
+            reamurInput.value = roundToTwo(r);
+        });
+
+        reamurInput.addEventListener('input', function() {
+            const r = parseFloat(this.value);
+
+            if (isNaN(r)) {
+                celciusInput.value = '';
+                fahrenheitInput.value = '';
+                return;
+Example
+            }
+
+            const c = r * 5/4;
+            const f = (r * 9/4) + 32;
+
+            celciusInput.value = roundToTwo(c);
+            fahrenheitInput.value = roundToTwo(f);
+        });
+
+        resetButton.addEventListener('click', function() {
+            celciusInput.value = '';
+            fahrenheitInput.value = '';
+            reamurInput.value = '';
+        });
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-M">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kalkulator Scientific</title>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/12.4.2/math.min.js"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            display: grid;
+            place-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #232526, #414345);
+        }
+
+        .calculator-card {
+            width: 100%;
+            max-width: 400px;
+            background: #2a2d32;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            padding: 25px;
+            overflow: hidden;
+        }
+
+        .calculator-display {
+            width: 100%;
+            padding: 15px;
+            margin-bottom: 20px;
+            background: #1e2024;
+            border-radius: 8px;
+            text-align: right;
+            border: none;
+            color: #ffffff;
+            font-size: 2.5rem;
+            font-weight: 500;
+            outline: none;
+        }
+
+        .calculator-keys {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 12px;
+        }
+
+        .calculator-keys button {
+            padding: 20px 10px;
+            font-size: 1.1rem;
+            font-weight: 500;
+            font-family: 'Poppins', sans-serif;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            background: #363a40;
+            color: #f0f0f0;
+            transition: all 0.2s ease;
+        }
+
+        .calculator-keys button:hover {
+            background: #4a4e54;
+        }
+
+        .calculator-keys button:active {
+            transform: scale(0.95);
+        }
+        
+        .btn-function {
+            background: #3a3f44;
+            color: #b0b0b0;
+        }
+        
+        .btn-operator {
+            background: #ff9f0a;
+            color: #ffffff;
+        }
+        
+        .btn-equals {
+            background: #28a745;
+            color: #ffffff;
+            grid-column: span 2;
+        }
+        
+        .btn-clear {
+            background: #d9534f;
+            color: #ffffff;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="calculator-card">
+        <input type="text" id="display" class="calculator-display" readonly placeholder="0">
+        
+        <div id="keyboard" class="calculator-keys">
+            <button class="btn-function" data-value="sin(">sin</button>
+            <button class="btn-function" data-value="cos(">cos</button>
+            <button class="btn-function" data-value="tan(">tan</button>
+            <button class="btn-function" data-value="log10(">log</button>
+            <button class="btn-function" data-value="log(">ln</button>
+
+            <button class="btn-function" data-value="(">(</button>
+            <button class="btn-function" data-value=")">)</button>
+            <button class="btn-function" data-value="^2">x²</button>
+            <button class="btn-function" data-value="sqrt(">√</button>
+            <button class="btn-function" data-value="^(">xʸ</button>
+
+            <button data-value="7">7</button>
+            <button data-value="8">8</button>
+            <button data-value="9">9</button>
+            <button class="btn-operator" data-value="/">÷</button>
+            <button class="btn-clear" data-value="clear">C</button>
+            
+            <button data-value="4">4</button>
+            <button data-value="5">5</button>
+            <button data-value="6">6</button>
+            <button class="btn-operator" data-value="*">×</button>
+            <button class="btn-function" data-value="backspace"><i class="fa-solid fa-delete-left"></i></button>
+
+            <button data-value="1">1</button>
+            <button data-value="2">2</button>
+            <button data-value="3">3</button>
+            <button class="btn-operator" data-value="-">−</button>
+            <button class="btn-function" data-value="pi">π</button>
+
+            <button data-value="0">0</button>
+            <button data-value=".">.</button>
+            <button class="btn-operator" data-value="+">+</button>
+            <button class="btn-equals" data-value="=">=</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            const display = document.getElementById('display');
+            const keyboard = document.getElementById('keyboard');
+            
+            let currentExpression = '';
+            
+            keyboard.addEventListener('click', (e) => {
+                if (!e.target.matches('button, button *')) return;
+                
+                const button = e.target.closest('button');
+                const value = button.dataset.value;
+                
+                try {
+                    switch (value) {
+                        case '=':
+                            if (currentExpression === '') {
+                                display.value = '0';
+                                return;
+                            }
+                            
+                            let expressionToEvaluate = currentExpression;
+                            const openParen = (expressionToEvaluate.match(/\(/g) || []).length;
+                            const closeParen = (expressionToEvaluate.match(/\)/g) || []).length;
+
+                            if (openParen > closeParen) {
+                                expressionToEvaluate += ")".repeat(openParen - closeParen);
+                            }
+                            
+                            const result = math.evaluate(expressionToEvaluate);
+                            display.value = roundResult(result);
+                            currentExpression = result.toString();
+                            break;
+                            
+                        case 'clear':
+                            currentExpression = '';
+                            display.value = '0';
+                            break;
+                            
+                        case 'backspace':
+                            currentExpression = currentExpression.slice(0, -1);
+                            display.value = currentExpression || '0';
+                            break;
+                            
+                        default:
+                            currentExpression += value;
+                            display.value = currentExpression;
+                            break;
+                    }
+                } catch (error) {
+                    display.value = 'Error';
+                    currentExpression = '';
+                }
+            });
+
+            function roundResult(num) {
+                return Math.round((num + Number.EPSILON) * 10000000000) / 10000000000;
+            }
+            
+            display.value = '0';
+        });
+    </script>
+
+</body>
+</html>
